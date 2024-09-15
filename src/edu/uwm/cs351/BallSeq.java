@@ -156,7 +156,7 @@ public class BallSeq implements Cloneable
 		if(manyItems > 0)
 			currentIndex = 0;
 		else
-			currentIndex= manyItems;
+			currentIndex = -1;
 		assert wellFormed() : "invariant failed at end of start";
 	}
 
@@ -193,7 +193,11 @@ public class BallSeq implements Cloneable
 	{
 		assert wellFormed() : "invariant failed at start of getCurrent";
 		// TODO: Implement this code.
-	}
+		if(isCurrent() == true)
+			return data[currentIndex];
+		else
+			throw new IllegalStateException("There is no current element: "); 
+		}
 
 	/**
 	 * Move forward, so that the next element is now the current element in
@@ -214,6 +218,15 @@ public class BallSeq implements Cloneable
 	{
 		assert wellFormed() : "invariant failed at start of advance";
 		// TODO: Implement this code.
+		try {
+			if(isCurrent()==true) {
+				currentIndex++;
+				if(currentIndex >= manyItems)
+					currentIndex = -1;
+			}
+		}
+		catch(IllegalStateException e) {
+			throw new IllegalStateException("There is no current element: ");}
 		assert wellFormed() : "invariant failed at end of advance";
 	}
 
@@ -236,6 +249,19 @@ public class BallSeq implements Cloneable
 		assert wellFormed() : "invariant failed at start of removeCurrent";
 		// TODO: Implement this code.
 		// You will need to shift elements in the array.
+		try {
+			if(isCurrent()==true) {
+				for(int i=currentIndex;i<manyItems-1;++i) {
+					data[currentIndex] = data[currentIndex+1];
+				}
+				data[manyItems-1]=null;
+				manyItems--;
+			}
+			if(currentIndex >= manyItems) {
+				currentIndex = -1;
+			}
+		}catch(IllegalStateException e) {
+			throw new IllegalStateException("There is no current element: ");}
 		assert wellFormed() : "invariant failed at end of removeCurrent";
 	}
 
@@ -293,6 +319,18 @@ public class BallSeq implements Cloneable
 	{
 		assert wellFormed() : "invariant failed at start of insert";
 		// TODO: Implemented by student.
+		if(data.length <= manyItems) {
+			ensureCapacity(manyItems*2+1);
+		}
+		if(isCurrent()==true) {
+			for(int i=manyItems;i>currentIndex;--i) {
+				data[i] = data[i-1];
+			}
+		}
+		else {
+			currentIndex = manyItems;
+		}
+
 		assert wellFormed() : "invariant failed at end of insert";
 	}
 	
@@ -316,7 +354,33 @@ public class BallSeq implements Cloneable
 	public void insertAll(BallSeq addend) {
 		assert wellFormed() : "invariant failed at start of addAll";
 		// TODO: Implement this code.
-		assert wellFormed() : "invariant failed at end of addAll";	
+		if(addend!=null) {
+			try {
+				if(data.length <= manyItems+addend.manyItems) {
+					ensureCapacity(manyItems+addend.manyItems);
+				}
+				if(isCurrent()==true) {
+					if(addend.manyItems == 0) {
+						return;
+					}
+					//shifiting of elements of current sequence to make space for the sequence that is to be added before current element
+					for(int i=manyItems+addend.manyItems;i>manyItems;--i) {
+						data[i-1] = data[manyItems-1];
+					}
+					//Updating the current sequence with the 
+					for(int i=0;i<addend.manyItems;++i) {
+						data[i] = addend.data[i];
+					}
+				}
+
+				else {
+					currentIndex = manyItems;
+				}
+			}catch(NullPointerException e) {
+				throw new NullPointerException("Addend is null");
+			}
+			assert wellFormed() : "invariant failed at end of addAll";	
+		}
 	}
 
 	/**
@@ -347,6 +411,7 @@ public class BallSeq implements Cloneable
 		}
 
 		// TODO: clone the data array
+		answer.data = data.clone();
 		
 		assert wellFormed() : "invariant failed at end of clone";
 		assert answer.wellFormed() : "invariant failed for clone";
