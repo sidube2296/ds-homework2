@@ -153,6 +153,10 @@ public class BallSeq implements Cloneable
 	{
 		assert wellFormed() : "invariant failed at start of start";
 		// TODO: Implement this code.
+		if(manyItems > 0)
+			currentIndex = 0;
+		else
+			currentIndex= manyItems;
 		assert wellFormed() : "invariant failed at end of start";
 	}
 
@@ -168,6 +172,10 @@ public class BallSeq implements Cloneable
 	{
 		assert wellFormed() : "invariant failed at start of isCurrent";
 		// TODO: Implement this code.
+		if(currentIndex >= 0 && currentIndex < manyItems)
+			return true;
+		else
+			return false;
 	}
 
 	/**
@@ -247,6 +255,23 @@ public class BallSeq implements Cloneable
 	{
 		// TODO: Implement this code.
 		// This is a private method: don't check invariants
+		Ball[] biggerArray;
+		int newCapacity;
+		if(minimumCapacity > 2*data.length)
+			newCapacity = minimumCapacity;
+		else
+			newCapacity = 2*data.length;
+		if(data.length < minimumCapacity) {
+			try {
+				biggerArray = new Ball[newCapacity];
+				for(int i=0;i<manyItems;++i) {
+					biggerArray[i] = data[i];
+				}
+				data = biggerArray;
+			}catch(OutOfMemoryError e) {
+				throw new OutOfMemoryError("Insufficient memory for new array of" +minimumCapacity+ "elements");
+			}
+		}
 	}
 
 	/**
