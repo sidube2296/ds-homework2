@@ -85,6 +85,12 @@ public class BallSeq implements Cloneable
 		// NB: NEVER assert the invariant at the START of the constructor.
 		// (Why not?  Think about it.)
 		// TODO: Implement this code.
+		try {
+			manyItems = 0;
+			data = new Ball[INITIAL_CAPACITY];
+		} catch(OutOfMemoryError e) {
+			throw new OutOfMemoryError("Insufficient memory for an array with " +INITIAL_CAPACITY);
+		} 
 		assert wellFormed() : "Invariant false at end of constructor";
 	}
 
@@ -108,6 +114,16 @@ public class BallSeq implements Cloneable
 	public BallSeq(int initialCapacity)
 	{
 		// TODO: Implement this code.
+		if (initialCapacity<0)
+			throw new IllegalArgumentException
+			("initialCapacity is nagative:"+initialCapacity);
+		try {
+			manyItems = 0;
+			data = new Ball[initialCapacity];
+		} catch(OutOfMemoryError e) {
+			throw new OutOfMemoryError("Insufficient memory for an array with " +initialCapacity);
+		} 
+		
 		assert wellFormed() : "Invariant false at end of constructor";
 	}
 
@@ -121,6 +137,7 @@ public class BallSeq implements Cloneable
 	{
 		assert wellFormed() : "invariant failed at start of size";
 		// TODO: Implement this code.
+		return manyItems;
 		// size() should not modify anything, so we omit testing the invariant here
 	}
 
