@@ -53,7 +53,7 @@ public class DodgeBall implements Runnable{
 	private DodgeBallPanel panel;
 	private JLabel displayClock;
 	private Player player;
-	private Ball[] balls; // TODO: Change to be a BallSeq
+	private BallSeq balls; // TODO: Change to be a BallSeq
 	private Ball deathBall;
 	private int level;
 	private int ballCount;
@@ -112,7 +112,7 @@ public class DodgeBall implements Runnable{
 	private void nextLevel(){
 		suspended = true;
 		level++;
-		balls = new Ball[ballCount]; // TODO: change to be a sequence
+		balls = new BallSeq(); // TODO: change to be a sequence
 		for (int i=0; i<ballCount; i++)
 			createBall(i);
 		startTime = Instant.now().plus(Duration.ofSeconds(COUNTDOWN));
@@ -142,13 +142,13 @@ public class DodgeBall implements Runnable{
 	private void createBall(int index){
 		Ball newBall;
 		while (!validLocation(newBall = randomBall())) {}
-		balls[index] = newBall; // TODO: change to add to sequence
+		balls.insert(newBall); // TODO: change to add to sequence
 	}
 	
 	private boolean validLocation(Ball newBall){
 		// TODO: Change to use Sequence methods
-		for (int i=0; i < balls.length; ++i){
-		    Ball b= balls[i];
+		for (int i=0; i < balls.size(); ++i){
+		    Ball b= balls.getCurrent();
 			if (b == null) continue;
 			if (b.isColliding(newBall)) return false;
 		}
@@ -173,8 +173,8 @@ public class DodgeBall implements Runnable{
 		player.update(getAdjustedMouseLoc());
 		//update balls
 		// TODO: change to use Sequence methods
-		for (int i = 0; i < balls.length; ++i) {
-			Ball b = balls[i];
+		for (int i = 0; i < balls.size(); ++i) {
+			Ball b = balls.getCurrent();
 			b.step();
 		}
 		if (!suspended){
@@ -189,8 +189,8 @@ public class DodgeBall implements Runnable{
 		else if (Instant.now().isBefore(stopTime)){
 			if (suspended){
 				suspended = false;
-				for (int i = 0; i < balls.length; ++i) {
-					Ball b = balls[i];
+				for (int i = 0; i < balls.size(); ++i) {
+					Ball b = balls.getCurrent();
 					b.launch();
 				}
 			}
@@ -221,10 +221,10 @@ public class DodgeBall implements Runnable{
 	private void checkCollisions(){
 		// TODO: Change to use Sequence methods.
 		// NB: You can't use nested loops on the same sequence
-		for (int i = 0; i < balls.length; ++i){
-			Ball a = balls[i];
-			for (int j = 0; j < balls.length; ++j){
-				Ball b = balls[j];
+		for (int i = 0; i < balls.size(); ++i){
+			Ball a = balls.getCurrent();
+			for (int j = 0; j < balls.size(); ++j){
+				Ball b = balls.getCurrent();
 				if (a != b && a.isColliding(b))
 					a.bounce(b);
 			}
@@ -235,8 +235,8 @@ public class DodgeBall implements Runnable{
 	//Check if the player was hit by any balls
 	private void checkGameOver(){
 		// TODO: change to use Sequence methods
-		for (int i = 0; i < balls.length; ++i) {
-			Ball b = balls[i];
+		for (int i = 0; i < balls.size(); ++i) {
+			Ball b = balls.getCurrent();
 			if (player.isColliding(b)){
 				deathBall = b;
 				gameover();
@@ -281,8 +281,8 @@ public class DodgeBall implements Runnable{
 			
 			//draw game entities
 			// TODO: Change to use Sequence methods
-			for (int i = 0; i < balls.length; ++i) {
-				Ball b = balls[i];
+			for (int i = 0; i < balls.size(); ++i) {
+				Ball b = balls.getCurrent();
 				b.draw(g);
 			}
 			player.draw(g);
